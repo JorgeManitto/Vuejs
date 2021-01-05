@@ -1,0 +1,119 @@
+INTERPOLACIONES
+
+La forma mas basica de enlace de datos es la intepolacion de texto usando la sintaxis
+de mustaches(llaves doble)
+
+	<span>Message: {{ msg }} <span>
+
+La etiqueta del mustache se reemplazara con el valor de la propiedad msg en el objeto
+de datos correspondiente. Tambien se actualizara cada vez que cambie la proiedad msg
+del objeto de datos.
+
+Tambien puede realizar interpolaciones unicas que no se actualizan en el cambio de datos
+usanla directiva v-once, pero tenga en cuenta que esto tambien afectara a cualquier otro
+enlace en el mismo nodo:
+
+<span v:once>Esto nunca cambiara: {{msg}}</span>
+
+Los mustaches(llaves doble) interetan los datos como texto plano, no HTML. Para generar
+HTML real, debera utilizar la directiva v-html :
+
+<p> Using mustaches : {{ rewHTML }}</p>
+<p> Using v-html directive: <span v-html="rawHtml"></span></p>
+
+	//Using mustaches: <span style="color:red">This should be red.</span>
+	//Using v-html directive: This should be red.
+
+ATRIBUTOS
+
+Los mustaches (llaves doble) no se pueden utilizar dentro de los atributos HTML. En
+su lugar, use una directiva v-bind:
+
+	<div v-bind:id="dynamicId"></div>
+
+En el caso de los atributos booleanos, donde su mera exitencia implica true,
+ v-bind funciona de manera un poco diferente. En este ejemplo:
+
+	<button v-bind:disabled = "isButtonDisbled">Button</butto>
+
+Si isButtonDisabled tiene le valor de null, undefined o false, el atributo disabled
+ni siquiera se inculira en el elemento <button> representado.
+
+USANDO EXPRESIONES JAVASCRIPT
+
+Hasta ahora solo hemos estodo vinculando a simples claves de propiedad en nuestras 
+template. Pero Vue.js realmente admite el poder completo de las expresiones de javascript
+dentro de todos los enlaces de datos:
+
+	{{numbre + 1}}
+	{{ok ? 'YES' : 'NO'}}
+	{{message.split('').reverse().join('')}}
+	
+	<div v-bind:id="'list-'+ id"></div>
+
+Estas expresiones se evaluraran como JavaScript en el ambito de datos la instancia de vue del propietario.
+ Una restriccion es que cada enlace solo puede contener una expresion, por lo que lo siguiente no funcionara:
+
+	//esto es una declaracion, no una expresion
+	{{let a = 1 }}
+	//el control de flujo tampoco funcionara, use expresiones ternarias
+	{{ if (ok){return message}}}
+
+DIRECTIVAS
+
+La directivas son atributos especiales con el prefijo v-. Se espera que los valores de 
+atibuto de la directiva sean una unica expresion de JavaScript(con la excepcion de v-for,
+que se tratara mas adelante). El trabajo de una directiva es aplicar reactivamente efectos secundarios al Dom
+cuando cambia el valor de su expresion. Repasemos el ejemplo que vimos en la introduccion:
+
+<p v-if = "seen">Now you see me</p>
+
+Aqui, la directiva v-if insertaria/eliminaria el elemento
+basandosee en la veracidad del valor de la expresion seen.
+
+ARGUMENTOS
+
+Algunoas directivas pueden tomar un "argumento", denotado por dos pintos despues del nombre
+de la directiva. Por ejemplo la riectiva v-bind se usa para actualizar de forma reactiva
+un atributo html:
+
+<a v-bind:href="url">...</a>
+
+Aqui href es el argumento, que le dice a la directiva v-bind que vincule el atributo
+href del elemnto al valor de la expresion url.
+
+Otro ejemplo es la directiva v-on, que escucha los eventos DOM:
+  
+	<a v-on:click="doSomething">...</a>
+
+Aqui el argumento es el nombre del evento a escuchar.
+
+MODIFICADORES 
+
+Los modificadores son sufijos especiales indicados por un punto, que indican que una 
+directiva debe estar vinculada de alguna manera especial. Por ejemplo, el modificador
+.prevent le dice a la directiva v-on que llame  a event.preventDefault () en el evento activado:
+
+<form v-on:submit.prevent = "onSubmit">...</form>
+
+MODO ABREVIADO 
+El prefijo v- sirve como una señal visual para identificar atributos especificos de 
+Vue en sus templates. Esto es util cuando esta utilizando Vue.js para aplicar un compratamiento
+dinamico aalgun marcado existente, pero puede sentirse detallado para algunas directivas de uso
+frecuente. Al mismo tiempo, la necesida del prefijo v- es menos importantecuando se esta construyendo
+un SPA donde vue.js administra cada template. Por lo tanto, vue.js proporciona abreviaturas
+especiales para dos de las directivas mas utlizadas, v-bind y v-on:
+
+  v-bind
+	//full syntax
+	<a v-bind:href = "url">...</a>
+	//abreviado
+	<a :href="url">...</a>
+
+  v-on 
+	//full syntax
+	<a v-on:click="doSomething">...</a>
+	//abreviado
+	<a @click="doSomething">...</a>
+
+

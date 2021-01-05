@@ -1,0 +1,131 @@
+Cada aplicacion de vue se comienza creando una nueva instancia de vue con la funcion vue:
+
+	const vm = new Vue ({
+	//opciones 
+			})
+
+Como una convencion, solemos usar la varible vm (abrevicion de viewmodel) 
+para hacer referencia a nuestra instancia de vue.
+
+Cuando usted crea una instancia de vue, le pasa un objeto option.
+La mayor parte de esta guia es para crear el comportamiento deseado.
+
+Una aplicacion  vue esta conformada por una instancia vue raiz creada con new vue, 
+opcionalmente organizada dentro de un arbol de componentes reusables anidados. Por ejemplo
+el arbol de una aplicacion to-do podria verse asi: 
+
+	Root instance
+	  TodoList
+	     DeleteTodoButton
+	     EditTodoButton
+	  TodoListFooter
+	     ClearTodosButton
+	     TodoListStatistics
+
+Es necesario saber que todos los componentes vue son tambien instancia de vue, por lo tanto
+aceptan el mismo objeto options(excepto para unas pocas especificas opciones de raiz).
+
+DATOS Y METODOS
+
+Cuando una instancia vue es creada, agrega todas las propiedas encontradas en su objeto
+data al sistema de reactividad de vue. Cuando los valores d estas propiedades cambien,
+las vista "reaccionara", actualizandose para coincidir con los nuevos valores
+
+let data = {a:1}
+
+let vm = new Vue ({
+data : data
+})
+
+vm.a == data.a // =>true
+
+//asignando la propiedad en la insatancia tambien afecta en la original
+vm.a = 2
+data.a // => 2
+
+data.a = 3
+vm.a //=>3
+
+Cuando los datos cambian, la vista volvera a renderizarse. Es preciso señalar que las
+propiedades en data solo son reactivas si ya existian cuando se creo la instancia. Eso
+significa que si usted agrega una nueva propiedad, como:
+
+vm.b = "hola"
+
+Entonces los cambios de b no produciran ninguna actualizacion en la vista. Si sabe
+que necesitara una propiedad mas adelantem, pero comienza vacia o inexistente, necesitara
+setear un valor inicial. Por ejemplo: 
+
+data: {
+newTodoText :'',
+visitCount: 0,
+hideCompletedTodos :false,
+todos:[],
+error: null
+}
+
+Object.freeze(), evita que se modifiquen las propiedades existentens, lo que tambien significa que el sistema 
+de reactividad no pueda restrear los combios.
+
+let obj = {
+   foo : 'bar'
+}
+
+object.freeze(obj)
+
+new vue({
+el: '#app'
+data:obj
+})
+
+<div id="app">
+<p>{{foo}}</p>
+<button v-on:click="foo = 'baz'">cambialo</button>
+</div>
+
+let data = {a: 1}
+let vm = new Vue ({
+el: '#example',
+data: data
+}) 
+
+vm.$data === data //true
+vm.$el === document.getElementById('example')
+
+//$watch es un metodo de instancia
+vm.$watch('a', function(newValue, oldValue){
+//Esta funcion sera ejecutada cuando 'vm.a' cambie
+})
+
+HOOKS DEL CICLO DE VIDA DE LA INSTANCIA
+cada instancia de vue pasa a traves de una serie de pasos de inicializacion cuando
+es creada-por ejemplo, se necesita configuarar la observacion de datos, compilar la
+plantilla, montar la instancia en el dom y actualizar el dom cuando cambian los datos.
+En el camino, tambien se ejecutan funciones llamdas hooks del ciclo de vida, lo que 
+brinda a los usuarios la oportunidad de agregar su porpio codigo en etapas especificas.
+
+Por ejemplo, el hook created puede ser utulizado para ejecutar codigo despues que una
+instancia es creada: 
+
+new vue({
+data:{
+a:1
+},
+created: function(){
+//'this' hace referncia a la instancia vm
+console.log('a es: '+this.a)
+}
+})
+=> "a es:1"
+
+Tambien hay otros hooks que se llamaran en diferentes etapas del ciclo de vida de la
+instancia, como mounted, updated, y deestroyed. Todos los hooks del ciclo de vida se llaman
+en el contexto this apuntando a la instancia de vue que lo invoca.
+
+NO USAR ARROW FUNCTIONS EN UNA PROPIEDAD DE OPCIONES O RESPUESTA, COMO :
+created:() = > console.log(this.a) or
+vm.$watch ('a', newValue => this.mymethod()). Dado que las arrow estan vinculadas al
+contexto padre, this no sera la instancia de vue como lo esperaria, los que suele produir
+erorres, como 'Uncaught TypeError: Cannot read property of undefined o Oncaught TypeError:
+this.myMethod is not a function'.
+

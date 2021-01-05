@@ -1,0 +1,147 @@
+MANEJO DE EVENTO
+
+Escuchar eventos 
+
+Podesmos usar la directiva v-in para escuchar eventos DOM y ejecutar algunos JavaScript
+cuando se activan.
+
+Por ejemplo
+
+	<div id="example-1">
+		<button v-on:click="counter +=1">ADD 1</button>
+		<p>Se ha hecho clic en le boton de arriba {{ counter }} veces.</p>
+	</div>
+	
+	var example1 = new Vue({
+	    el:'#example-1',
+	    data: {
+		counter: 0
+		}
+	})
+
+
+METODOS MANEJADORES DE EVENTOS 
+
+Sin embargo, la logica para muchos controladores de eventos sera mas compleja, por lo
+que no es posible mantener su JavaScript en el valor del atributo v-on. Es por eso que
+v-on tambien puede aceptar el nombre de un metodo al que te gustaria llamar.
+
+Por ejemplo:
+
+	<div id = "example-2">
+	  <button v-on:click="saludar"> Saludar</button>
+	</div>
+
+	var example2 = "#example2",
+	data: {
+	   name: 'Vue.js'
+	},
+	//definir metodos bajo el objeto methods
+	methods: {
+	  saludar: function (event) {
+	     alert('Hola' + this.name + '!')
+		if(event){
+		alert(event.target.tagname)
+		}
+	}
+}
+})
+// también puedes invocar métodos en JavaScript
+example2.greet()
+
+METODOS MANEJADORES EN LINEA
+
+En lugar de enlazar directamente con un nombre de metodo, tambien podemos usar metodos
+en una declaracion de JavaScript en linea:
+	
+	<div id="example-3">
+	  <button v-on:click="di('hola')">Di hola </button>
+	  <button v-on:click="di('que')">Di que </button>
+	</div>
+
+new vue ({
+el: '#example-3',
+methods: {
+di: function (mensaje){
+	alert(mensaje)
+	}
+}
+})
+
+A veces tambien necesitamos acceder al evento DOM original en un contraldor de instrucciones
+en linea. Puedes pasarlo a un metodo usando la variable especial
+
+	$event:
+	
+	<button v-on:click="Alertar('El form no se puede enviar aun.', $event)">
+	Enviar
+	</button>
+
+	.//
+	methos:{
+	Alertar: function (message, event) {
+	//ahora tenemos acceso al evento nativo
+	if(event) event.preventDefault()
+	alert(message)
+	}
+}
+
+
+MODIFICADORES DE EVENTOS
+
+Es una necesidad muy comun llamara a event.prevent Default() p event.stopPropagation() dentro
+de los controladores de eventos. Aunque podes hacer esto facilmente dentro de los metodos,
+seria mejor si los metodos fueran puramente sobre la logica de datos en lugar de tener que lididar
+con los detalles del enveto DOM
+
+Para solucionar este problema, Vue proporciona modificadores de eventos para v-on. Recuerde
+que los modificadores son directivas postfijos marcodos por un punto.
+
+1- .stop
+2- .prevent
+3- .capture 
+4- .self
+5- .once
+6- .passive
+
+El orden es importante cuando se usan moficadores porque el codigo relevante se genera
+en el mismo orden. Por lo tanto, el uso de v-on: click.prevent.self evitara todos los
+clics mientras que v-on: click.self.prevent solo evitara clics en el elemento en si.
+
+
+MODIFICADORES DE TECLAS 
+
+Cuando escuchamos eventos de teclado, a menudo necesitamos verificar codifos de teclas
+comunes. Vue tambien permite agregar modficadores clave para v-on cuando se escuchan
+eventos de teclado:
+
+ // solo llame a 'vm.submit()' cuando el 'keycode es 13
+	<input v-on: keyup.13 = "submit">
+
+Recordar todos los keyCodes son un dolor de cabeza, por lo que Vue proporciona alias
+para las teclas mas utilizas:
+
+	//lo mismo que arriba
+	<input v-on:keyup.enter ="submit">
+	//tambien funciona como abreviacion
+	<input @keyup.enter ="submit">
+
+Aqui esta la lista completa de alias:
+
+1- .enter 
+2- .tab
+3- .delete (captura ambas teclas "delete" y "backspace")
+4- .esc
+5- .space
+6- .up
+7- .down
+8- .left
+9- .right
+
+Tambien puede definir alias modificadores de tecla personalizados a traves del objeto global
+config.keyCodes :
+
+Vue.config.keyCodes.f1 = 112
+
+	 
+	

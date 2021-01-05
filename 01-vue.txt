@@ -1,0 +1,146 @@
+Vue, un framework progresivo para construir  interfaces de usuarios.
+
+Nucleo de vue, nos permite procesar datos de forma declarativa al dom mediante una sintaxis de plantilla
+sencilla:
+
+en el dom 
+
+<div id="app">
+{{message}}
+</div>
+
+script
+
+const app = new Vue({
+el:'#app',
+data: {
+message: 'hola vue'
+}
+})
+
+//hola vue
+
+esto se parece mucho a un templete string, pero vue hace trabajo por debajo 
+ahora los elementos vinculados al dom son reactivos, si vamos a la consola del nav
+y cambiamos el valor de {{message}} por otro y  deberia ver que el ejemplo 
+se ha renderizado con el nuevo valor que acaba de ingresar
+
+
+El atributo v-bind, se llaman directiva. Las directivas tiene el prefijo  v- para indicar
+que son atributosd especiales proporcionados por vue (tiene el comportamiento reactivo espeial al dom)
+
+ejemplos: v-if, v-for, v-model
+
+<div id="app">
+<ol>
+
+<li v-for="todo in todos">
+{{todo.text}}
+</li>
+</ol>
+</div>
+
+const app = new Vue({
+el: '#app',
+data :{
+todos: [
+{text:'aprender javascript'},
+{text: 'aprender vue'},
+{text: ' construir algo increible'}
+	]
+}
+})
+
+En la consola ingrese app.todos.push (text:'nuevo elemento'}) .Deberia ver un nuevo
+elemnto agregado en la lista
+
+
+
+v-on permite interactuar en la aplicacion, podes adjuntar eventos que invocan metodos de nuestra instancia de Vue
+
+<div id="app">
+<p>{{message}}</p>
+<button v-on:click="reverseMessage"> Mesaje invertido</button>
+</div>
+
+const app = new Vue({
+el:'#app',
+data:{
+message: 'Hola vue.js'
+},
+methods: {
+reverseMessage : function (){
+ this.message = this.message.split('').reverse().join('')
+}
+}
+})
+
+//hola vue.js
+//buutton mensaje invertido
+//sj.euv aloH
+
+V-model hace que el enlace bidireccional entre los controles de los formularios y el estado
+de la aplicacion sea my sencilla
+
+<div id ="app">
+<p> {{message}}</p>
+<input v-modal = "message">
+</div>
+
+const app = new Vue ({
+el: '#app',
+data: {
+	message:'Hola Vue!'
+	}
+})
+
+ 
+
+El sistema de componentes es otro concepto importante en vue, porque es una
+abstaccion que nos permite crear aplicaciones a gra escala compuesta de 
+componentes pequeños, independientes y , a menudo, reutilizables.
+
+En vue, un componente es esencilmente una instancia de vue con opciones predefinidas.
+
+script
+//Define un nuevo componente llamado todo-list
+Vue.component ('todo-item',{
+template: '<li>Esta es una tarea.</li>
+})
+
+dom
+<ol>
+<todo-item></todo-item>
+</ol>
+
+
+Es posible que se pueda pasar datos de ub scope o contexto padre a uno secundario
+en los componentes hijos.
+
+//dom
+<div id="app">
+<ol>
+	<todo-item
+		v-for="item in groceryList"
+		v-bind:todo = "item"
+		v-bind:key = "item.id">
+	</todo-item>
+</ol>
+</div>
+
+//script
+Vue.component('todo-list',{
+prop:['todo'],
+template:'<li>{{todo.text}}</li>
+})
+
+const app = new Vue ({
+	el: '#app',
+	data:{
+	groceryList:[
+	{id:0, text: 'Vegetales'}
+	{id:1, text: 'Queso'}
+	{id:2, text: 'Cualquier otra cosa que se supone que los humanos coman'}
+		]
+}
+})	
